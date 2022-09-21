@@ -1,0 +1,291 @@
+DDL
+---------------------------------------------------------------
+create database demo
+
+--Q1-CREATING DEPARTMENT TABLE(PARENT)
+CREATE TABLE Department(
+       Deptno INT,
+	   Deptname VARCHAR(20) UNIQUE,
+	   Flor INT,
+	   Locatin VARCHAR(20)
+	   PRIMARY KEY(Deptno)
+	)
+
+--Q3CREATING EMPLOYEE TABLE(CHILD)
+CREATE TABLE Employee(
+   Empno INT ,
+   MangerID INT,
+   FirstName VARCHAR(20),
+   LastName VARCHAR(20),
+   UerId VARCHAR(20),
+   Deptno INT,
+   salary DECIMAL(5,2),
+   Commision INT,
+   Joiningdate DATE,
+   Designation VARCHAR(25)
+   PRIMARY KEY(Empno)
+   CONSTRAINT fk_Deptno
+   FOREIGN KEY(Deptno)
+   REFERENCES Department(Deptno)
+   ON DELETE CASCADE
+   )
+
+--Q4 AADING HRA  TO EMPLOYEE TABLE
+ALTER TABLE Employee ADD HRA DECIMAL(7,2)
+
+--Q5 MODIFY HRA COMPONENTS WIDTH 5 AND 2 DECIMAL
+ALTER TABLE Employee ALTER COLUMN HRA DECIMAL(5,2)
+
+--Q6 CHECK CONSTRAINT FOR PF
+ALTER TABLE Employee ADD PF DECIMAL(5,2)
+CONSTRAINT chk_pf
+CHECK(PF<=5000)
+ 
+
+SELECT * FROM Employee
+
+
+
+--Q7 CREATE TABLE CUSTOMER,ORDER,ORDERITEM
+--Q8 CUSTOMER
+
+CREATE TABLE Customer(
+ Custno INT,
+ Custname VARCHAR(20),
+ Addres VARCHAR(40)
+ PRIMARY KEY(Custno)
+ )
+ --Q9 ORDER
+ CREATE TABLE Orders(
+    Orderno INT,
+	Custno  INT,
+	orderdate DATE
+	PRIMARY KEY(Orderno)
+	CONSTRAINT fk_Orderno
+	FOREIGN KEY(Custno)
+	REFERENCES Customer(Custno)
+	ON DELETE CASCADE
+	)
+--Q10 ORDERITEM
+CREATE TABLE OrderItem(
+   ItemID INT,
+   OrderNo INT,
+  ItemName VARCHAR(20),
+  Qunatity INT
+  PRIMARY KEY(ItemID)
+  CONSTRAINT fk_OrdreNo
+  FOREIGN KEY(OrderNo)
+  REFERENCES Orders(OrderNo)
+  ON DELETE CASCADE
+  )
+----Q11 INCREASING ADDRESS FIELD WIDTH
+ALTER TABLE Customer ALTER COLUMN Addres VARCHAR(100)
+
+--Q12 CREATE TABLES COURSE,BATCH,STUDENTS
+
+--Q13 COURSE
+CREATE TABLE Course(
+   Courseid VARCHAR(5),
+   StreamID VARCHAR(20),
+   Title VARCHAR(40),
+   Descript VARCHAR(200),
+   Fees INT,
+   PRIMARY KEY(Courseid)
+   )
+--Q14BATCH
+CREATE TABLE Batch
+(
+	BatchId VARCHAR(30) PRIMARY KEY,
+	Courseid VARCHAR(5),
+	BatchName Char(1)
+	CONSTRAINT fk_courseid
+		FOREIGN KEY(Courseid)
+		REFERENCES Course(Courseid)
+)
+--Q15 STUDENT
+CREATE TABLE Student(
+Studid VARCHAR(20),
+BatchId VARCHAR(30),
+Lastname VARCHAR(25),
+MiddleName VARCHAR(30),
+Firstname VARCHAR(20),
+Dob DATE DEFAULT GETDATE(),
+Addres VARCHAR(50),
+City VARCHAR(20),
+Stat VARCHAR(2),
+Zipcode VARCHAR(9),
+Telephone VARCHAR(10),
+Fax VARCHAR(10),
+Email VARCHAR(10),
+Grade  CHAR(1)
+CONSTRAINT chk_grade
+CHECK(Grade IN('A','A+','A-','B','B+','B-','C','C+','C-','D','D+','D-','F','F+','F-')),
+PRIMARY KEY(Studid),
+CONSTRAINT fk_BatchId
+		FOREIGN KEY(BatchId)
+		REFERENCES Batch(BatchId)
+)
+--Q16 REMOVING MIDDLE NAME
+ALTER TABLE Student DROP COLUMN MiddleName
+
+--Q17 RENAME THE TABLE
+EXEC sp_rename 'Student','Participant'
+-----------------------------------------------------------------------------------------------------|
+DML                                                                                                  |
+-----------------------------------------------------------------------------------------------------|
+USE demo
+--Q2
+  INSERT INTO Employee VALUES(104,14,'samuel','roy','786',4,67,9,'2021-12-10','IT',20,9)
+--employee table is a child table and it caontains foriegn key,it directly wont take values
+
+--Q3
+INSERT INTO Department VALUES(10,'Accounts',2,'Trivandrum')
+select  * from Department
+
+INSERT INTO Employee(Empno,Deptno,FirstName) VALUES(10,11,'sam')
+select * from Employee
+
+--Q4 INSERTING DATA
+
+INSERT INTO Department VALUES
+(1,'IB1',5,'tech1'),
+(2,'IB2',2,'tech2'),
+(3,'IB3',7,'tech3')
+INSERT INTO Employee VALUES
+(101,14,'samuel','roy','786',1,407,9,'1997-12-10','IT',20,9),
+(102,15,'Alext','joel','859',2,203,8,'2022-01-09','QA',4,8),
+(103,16,'saint','mary','870',3,629,7,'2022-01-04','HR',9,8)
+
+INSERT INTO Customer VALUES
+(1,'SAM','ASDSFS SDFD'),
+(2,'CANY','DHCBND D'),
+(3,'RAM','CHDSAB MSA')
+INSERT INTO Customer VALUES(4,'ROXY','ETYU')
+
+INSERT INTO Orders VALUES
+(11,1,'2020-09-11'),
+(12,2,'2019-09-15'),
+(13,3,'2022-10-14')
+
+INSERT INTO OrderItem VALUES
+(1,11,'BIRYANI',1),
+(2,12,'chicken fry',2),
+(3,13,'mandi',1)
+
+INSERT INTO Course VALUES
+('A','1','AI','Artificial Intelligence',8300),
+('B','2','IOT','Internet Of Things',9000),
+('C','3','DS','DataScience',8000)
+
+INSERT INTO Batch VALUES
+('1','A','F'),
+('2','B','M'),
+('3','C','S')
+
+INSERT INTO Participant VALUES
+('20','1','Roy','Samuel','2003-09-09','sam villa','kul','KL','908','908789','HG','ASD@DFG','A'),
+('13','2','Roy','Rahul','1994-09-05','Ram villa','Lul','TN','928','908789','HG','ARE@DFG','B'),
+('14','3','Rao','siri','2004-09-04','krishna villa','Yul','AP','948','958789','HG','ART@DFG','C')
+
+--Q5 REMOVING RECORD
+DELETE FROM Customer WHERE Custno=4
+
+--Q6 inserting value to a PARTICULAR FEILD
+INSERT INTO Employee(EmpNo,FirstName) VALUES(4,'Dev')
+
+---Q7 CAHNGING VALUE OF PARTICULAR FIELD
+SELECT *FROM Customer
+
+UPDATE Customer
+	SET Addres='NewDelhi'
+	WHERE Custno=1;
+
+--Q8 REMOVING FIELD WITH CONDITION
+DELETE FROM Employee 
+	WHERE salary>=5000;
+
+--Q9 changing multiple field values
+SELECT * FROM Employee
+UPDATE Employee
+	SET FirstName='anju',Deptno=2
+	WHERE Empno=101;
+
+--Q10
+SELECT * FROM Participant
+INSERT INTO Participant(Studid,Dob) VALUES('29','2020-01-05')
+--checking null value and replacing with NA
+UPDATE Participant
+	SET Email='NA'
+	WHERE Email IS NULL;
+
+--Q11 removing participants whose age>20
+DELETE FROM Participant 
+	WHERE DATEDIFF(YEAR,Dob,GETDATE())>20
+--SELECT  DATEDIFF(YEAR,'2020-09-23',GETDATE())
+
+--q12.removing fields of email and telephone if it contains null values 
+
+DELETE FROM Participant
+	WHERE Email IS NULL AND Telephone IS NULL;
+
+--Q13.LIKE OPERATOR
+DELETE From Participant
+	WHERE Dob LIKE '%-05-05'
+
+--Q14.DOB TO CURRENT DATETIME
+UPDATE Participant 
+	SET FirstName='XXX',Dob=CURRENT_TIMESTAMP
+	WHERE FirstName LIKE '___a%'
+
+--Q15.
+DELETE FROM Participant
+	WHERE stat LIKE '%a';
+
+--Q16.
+UPDATE Participant
+	SET LastName='Jan'
+	WHERE Dob LIKE '_____01%'
+
+--Q17.
+DELETE FROM Participant
+	WHERE stat LIKE 'T%'
+-------------------------------------------------------------------------------------
+DQL
+-------------------------------------------------------------------------------------
+USE demo
+SELECT * FROM Employee
+--Q1
+SELECT FirstName,salary*30/100*12 AS [Annual tax] FROM Employee
+
+--Q2
+SELECT * FROM  Employee 
+ORDER BY FirstName
+--Q3
+SELECT *FROM Employee
+ORDER BY salary DESC
+--Q4
+SELECT * FROM Employee 
+WHERE FirstName LIKE 'A%e%t'
+--Q5
+SELECT * FROM Employee 
+WHERE Joiningdate > '1998-01-01' AND salary>25000
+--Q6
+INSERT INTO Employee(Empno,FirstName,Deptno) VALUES(105,'Tommy',2)
+
+SELECT * FROM Employee 
+WHERE Commision IS NULL
+--Q7
+SELECT ProName +' costs '
+	+CAST(ProPrice AS VARCHAR)+' after discount' AS [Festival Offer]
+FROM Product
+--Q8
+INSERT INTO Product VALUES(108,'Oneplus 3T',90,1104)
+SELECT * FROM Product
+WHERE ProPrice>50  AND  ProPrice<100
+--Q9
+INSERT INTO Product VALUES(107,'Oneplus',100,1104)
+SELECT * FROM Product
+WHERE ProPrice BETWEEN 50 AND 100
+
+--Q10
+SELECT DISTINCT Designation FROM Employee
