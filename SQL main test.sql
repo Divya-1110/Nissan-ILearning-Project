@@ -48,7 +48,8 @@ select MfName ,State from MANUFACTURER where State='South Dakota'
 select avg(Weight) as [Average Weight] from COMPUTER
 
 --Q3
-select EmpName from EMPLOYEE where phone like '2%'
+select EmpName from EMPLOYEE where phone like '9%'
+
 --q4
 select SerialNumber from COMPUTER where Weight <
 (select avg(Weight) from COMPUTER)
